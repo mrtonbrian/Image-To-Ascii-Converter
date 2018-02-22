@@ -12,4 +12,4 @@ Sample Conversion:
   ![Taj Mahal Image](https://st2.depositphotos.com/5617188/12361/v/950/depositphotos_123618042-stock-illustration-taj-mahal-india-outline-and.jpg)
   ![Taj Mahal Converted Image](https://image.ibb.co/cBQASc/TM_Ascii_Edited.png)
  
- Note: Works Best On High Contrast Images
+ Note: Works Best On High Contrast Images and Aspect Ratio Changes Are Due To Notepad
