@@ -1,14 +1,18 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class ImageToAsciiConverter extends JFrame {
     private JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-    JProgressBar jp;
-
+    private JProgressBar jp;
+    private int maxWidth = 1280;
+    private int maxHeight = 720;
+    private int scalingMethod = Image.SCALE_SMOOTH;
     private ImageToAsciiConverter() {
         super("Image File To Ascii Art Converter");
 
@@ -58,7 +62,25 @@ public class ImageToAsciiConverter extends JFrame {
                         File returnedFile = fc.getSelectedFile();
                         String filename = returnedFile.getAbsolutePath();
                         fileOpener.setText(filename);
-                        pic.setIcon(new ImageIcon(filename));
+                        BufferedImage selectedImage = ImageIO.read(new File(filename));
+                        Image scaledImage;
+
+                        //Checks If Both Height And Width Are Too Big
+                        if (selectedImage.getHeight() > maxHeight) {
+                            scaledImage = selectedImage.getScaledInstance(-1,maxHeight,scalingMethod);
+                            if (scaledImage.getWidth(null) > maxWidth) {
+                                scaledImage = scaledImage.getScaledInstance(maxWidth,-1,scalingMethod);
+                            }
+                        } else if (selectedImage.getWidth() > maxWidth) {
+                            scaledImage = selectedImage.getScaledInstance(maxWidth,-1,scalingMethod);
+                            if (scaledImage.getHeight(null) > maxHeight) {
+                                scaledImage = scaledImage.getScaledInstance(-1,maxHeight,scalingMethod);
+                            }
+                        } else {
+                            scaledImage = selectedImage;
+                        }
+
+                        pic.setIcon(new ImageIcon(scaledImage));
                         pack();
                     }
                 } catch (Exception ex) {
@@ -88,9 +110,9 @@ public class ImageToAsciiConverter extends JFrame {
                         JOptionPane.showMessageDialog(null, "Starting \n It May Take A Few Seconds");
                         //c.toAscii(filePath, fn);
                         class runner implements Runnable {
-                            String i;
-                            String o;
-                            Converter p;
+                            private String i;
+                            private String o;
+                            private Converter p;
 
                             runner(String inpFile, String outFile, Converter u) {
                                 i = inpFile;
@@ -110,9 +132,11 @@ public class ImageToAsciiConverter extends JFrame {
 
                         class looper implements Runnable {
                             Converter conv;
+
                             looper(Converter p) {
                                 conv = p;
                             }
+
                             @Override
                             public void run() {
                                 while (true) {
@@ -162,15 +186,6 @@ public class ImageToAsciiConverter extends JFrame {
             }
         });
 
-    }
-
-    public void showFinished() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                JOptionPane.showMessageDialog(null, "Finished!");
-            }
-        });
     }
 
     public static void beep() {
