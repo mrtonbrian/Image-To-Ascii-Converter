@@ -4,12 +4,19 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class Converter {
-    double finishedPercent = 0;
-    public void toAscii(String fn, String outputFilePath) {
+    private double finishedPercent = 0;
+    public void toAscii(String fn, String outputFilePath,double scalingFactor) {
+        int scalingMethod = Image.SCALE_SMOOTH;
         try {
-            System.out.println("Started");
             char[] pixelChars = {'@', '%', '#', 'x', '+', '=', ':', '-', '.', ' '};
             BufferedImage image = ImageIO.read(new File(fn));
+
+            //Prevents Unnecessary Scaling
+            if (scalingFactor != 1.0d) {
+                System.out.println("Scaled");
+                image = imgToBuff(image.getScaledInstance((int) (image.getWidth() * scalingFactor), -1, scalingMethod));
+            }
+
             for (int y = 0; y < image.getHeight(); y += 1) {
                 StringBuilder sb = new StringBuilder();
                 finishedPercent = ((double)(y))/image.getHeight();
@@ -65,5 +72,15 @@ public class Converter {
 
     public int getProgress() {
         return (int) (finishedPercent * 100);
+    }
+
+    private static BufferedImage imgToBuff(Image i) {
+        BufferedImage out = new BufferedImage(i.getWidth(null),i.getHeight(null),BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D graphs = out.createGraphics();
+        graphs.drawImage(i,0,0,null);
+        graphs.dispose();
+
+        return out;
     }
 }

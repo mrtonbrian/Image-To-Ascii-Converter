@@ -37,7 +37,19 @@ public class ImageToAsciiConverter extends JFrame {
         jp.setValue(0);
         jp.setStringPainted(true);
 
+        JPanel textboxPanel = new JPanel();
+        textboxPanel.setLayout(new FlowLayout());
+        textboxPanel.add(new JLabel("Scaling Factor (Decimal): "));
+        //TextField Is Used For Thread Safety
+        TextField scalingFactor = new TextField();
+        scalingFactor.setText("1");
+        Thread formattingThread = new Thread(new Formatter(scalingFactor));
+        formattingThread.start();
+
+        textboxPanel.add(scalingFactor);
+
         panel.add(fileOpener);
+        panel.add(textboxPanel);
         panel.add(SubmitButton);
         panel.add(pic);
         panel.add(jp);
@@ -108,32 +120,35 @@ public class ImageToAsciiConverter extends JFrame {
                         beep();
 
                         JOptionPane.showMessageDialog(null, "Starting \n It May Take A Few Seconds");
-                        //c.toAscii(filePath, fn);
                         class runner implements Runnable {
                             private String i;
                             private String o;
                             private Converter p;
-
-                            runner(String inpFile, String outFile, Converter u) {
+                            private double s;
+                            private runner(String inpFile, String outFile, Converter u, double scaling) {
                                 i = inpFile;
                                 o = outFile;
                                 p = u;
+                                s = scaling;
                             }
 
                             @Override
                             public void run() {
-                                p.toAscii(i, o);
+                                p.toAscii(i, o, s);
                             }
                         }
-                        Thread t = new Thread(new runner(filePath, fn, c));
+                        if (scalingFactor.getText().equals("")) {
+                            scalingFactor.setText("1");
+                        }
+                        Thread t = new Thread(new runner(filePath, fn, c, Double.parseDouble(scalingFactor.getText())));
                         t.start();
                         jp.setValue(0);
 
 
                         class looper implements Runnable {
-                            Converter conv;
+                            private Converter conv;
 
-                            looper(Converter p) {
+                            private looper(Converter p) {
                                 conv = p;
                             }
 
@@ -167,7 +182,7 @@ public class ImageToAsciiConverter extends JFrame {
         });
     }
 
-    public static String getOuterDirectoryFromFile(String s) {
+    private static String getOuterDirectoryFromFile(String s) {
         try {
             File f = new File(s);
             String absolutePath = f.getAbsolutePath();
@@ -188,7 +203,7 @@ public class ImageToAsciiConverter extends JFrame {
 
     }
 
-    public static void beep() {
+    private static void beep() {
         Toolkit.getDefaultToolkit().beep();
     }
 
