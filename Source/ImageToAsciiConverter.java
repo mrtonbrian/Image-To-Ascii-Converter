@@ -17,12 +17,6 @@ public class ImageToAsciiConverter extends JFrame {
         super("Image File To Ascii Art Converter");
 
         //Sets Look And Feel To System Default
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            SwingUtilities.updateComponentTreeUI(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         //Sets Up Panel
         JPanel panel = new JPanel();
@@ -58,7 +52,7 @@ public class ImageToAsciiConverter extends JFrame {
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
-
+        SwingUtilities.updateComponentTreeUI(this);
         fileOpener.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -208,6 +202,11 @@ public class ImageToAsciiConverter extends JFrame {
     }
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         new ImageToAsciiConverter();
     }
 }
