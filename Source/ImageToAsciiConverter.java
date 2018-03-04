@@ -2,8 +2,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -32,8 +31,10 @@ public class ImageToAsciiConverter extends JFrame {
         jp.setStringPainted(true);
 
         JPanel textboxPanel = new JPanel();
-        textboxPanel.setLayout(new FlowLayout());
-        textboxPanel.add(new JLabel("Scaling Factor (Decimal): "));
+        textboxPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JLabel l = new JLabel("Scaling Factor (Decimal): ");
+        l.setHorizontalAlignment(SwingConstants.LEFT);
+        textboxPanel.add(l);
         //TextField Is Used For Thread Safety
         TextField scalingFactor = new TextField();
         scalingFactor.setText("1");
@@ -48,11 +49,29 @@ public class ImageToAsciiConverter extends JFrame {
         panel.add(pic);
         panel.add(jp);
 
+        fileOpener.setAlignmentX(Component.LEFT_ALIGNMENT);
+        textboxPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        SubmitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(panel);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         SwingUtilities.updateComponentTreeUI(this);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                //super.componentResized(e);
+                if (pic.getIcon() == null) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            pack();
+                        }
+                    });
+                }
+            }
+        });
         fileOpener.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

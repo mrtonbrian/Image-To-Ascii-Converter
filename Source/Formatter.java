@@ -28,7 +28,7 @@ public class Formatter extends Thread {
                 }
             }
             try {
-                if ((stringBuilder.toString().length() > 0 || !(stringBuilder.toString().equals(text))) && textField.getSelectedText().length() == 0) {
+                if ((stringBuilder.toString().length() > 0 || !(stringBuilder.toString().equals(text))) && textField.getSelectedText().length() == 0 && !(textField.getCaretPosition() < textField.getText().length())) {
                     textField.setText(stringBuilder.toString());
                     textField.setCaretPosition(stringBuilder.toString().length());
                     try {
